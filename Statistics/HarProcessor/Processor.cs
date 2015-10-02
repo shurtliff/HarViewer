@@ -177,7 +177,7 @@ namespace HarProcessor
 			string returnMe = "";
 			foreach (var entry in entries)
 			{
-				returnMe += string.Format("TotalTime:{0}\tBlock:{1}    \twait:{2}\t\tconnect:{3}\tDNS:{4}\tSent:{5}\tRecieved:{6}\tEntry: {7}{8}", entry.Time, entry.Timings.Blocked, entry.Timings.Wait, entry.Timings.Connect, entry.Timings.Dns, entry.Timings.Send, entry.Timings.Receive, entry.Request.Url.Host, entry.Request.Url.AbsolutePath);
+				returnMe += string.Format("TotalTime:{0}\tBlock:{1}    \twait:{2}\t\tconnect:{3}\tDNS:{4}\tSent:{5}\tRecieved:{6}\tEntry: {7}{8}", Math.Ceiling(entry.Time), Math.Ceiling(entry.Timings.Blocked??-2), Math.Ceiling(entry.Timings.Wait), Math.Ceiling(entry.Timings.Connect??-2), Math.Ceiling(entry.Timings.Dns??-2), Math.Ceiling(entry.Timings.Send), Math.Ceiling(entry.Timings.Receive), entry.Request.Url.Host, entry.Request.Url.AbsolutePath);
 				returnMe += Environment.NewLine;
 			}
 
