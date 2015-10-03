@@ -60,6 +60,11 @@ namespace HarProcessor
 			m_har = HarConvert.DeserializeFromFile(fileName);
 			initialize();
 		}
+		public string getUrl()
+		{
+			// It will throw an exception if the processor has not been initialized.
+			return m_har.Log.Entries[0].Request.Url.AbsoluteUri;
+		}
 		public string getPageLoadTimes()
 		{
 			string returnMe = "";
@@ -131,6 +136,10 @@ namespace HarProcessor
 			}
 			//m_orderedList = test.ToList();
 		}
+		public string getAllByExecution()
+		{
+			return getEntryTimes(m_har.Log.Entries);
+		}
 		public string getAllByTime()
 		{
 			return getEntryTimes(m_fullList);
@@ -184,5 +193,30 @@ namespace HarProcessor
 			return returnMe;
 
 		}
+		public void loadFromURL(string url)
+		{
+			string name = MakeValidFileName(url) + ".har";
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(name))
+			{
+				NReco.PhantomJS.PhantomJS test = new NReco.PhantomJS.PhantomJS();
+				test.OutputReceived += (sender, e) =>
+				{
+					file.Write(e.Data);
+					//Console.WriteLine("PhantomJS output: {0}", e.Data);
+				};
+				string[] args = { url };
+				test.Run("netsniff.js", args);
+			}
+			LoadFromFile(name);
+		}
+
+		private static string MakeValidFileName(string name)
+		{
+			string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+			string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+			return System.Text.RegularExpressions.Regex.Replace(name, invalidRegStr, "_");
+		}
+
 	}
 }
