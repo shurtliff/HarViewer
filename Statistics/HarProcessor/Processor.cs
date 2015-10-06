@@ -9,27 +9,26 @@ namespace HarProcessor
 {
     public class Processor
     {
+		protected double m_totalTime;
 		protected double? m_totalBlockTime;
 		protected double? m_totalWaitTime;
 		protected double? m_totalConnectTime;
 		protected double? m_totalDnsTime;
 		protected double? m_totalSentTime;
 		protected double? m_totalRecieveTime;
-		protected SortedSet<Entry> m_blockedEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.BLOCK, false));
-		protected SortedSet<Entry> m_waitedEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.WAIT, false));
-		protected SortedSet<Entry> m_connectedEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.CONNECT, false));
-		protected SortedSet<Entry> m_dnsEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.DNS, false));
-		protected SortedSet<Entry> m_sentEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.SEND, false));
-		protected SortedSet<Entry> m_recievedEntries = new SortedSet<Entry>(new EntryComparor(EntryEnum.RECIEVE, false));
-		//protected IList<Entry> m_blockedEntries;
-		//protected IList<Entry> m_waitedEntries;
-		//protected IList<Entry> m_connectedEntries;
-		//protected IList<Entry> m_dnsEntries;
-		//protected IList<Entry> m_sentEntries;
-		//protected IList<Entry> m_recievedEntries;
+		protected List<Entry> m_blockedEntries = new List<Entry>();
+		protected List<Entry> m_waitedEntries = new List<Entry>();
+		protected List<Entry> m_connectedEntries = new List<Entry>();
+		protected List<Entry> m_dnsEntries = new List<Entry>();
+		protected List<Entry> m_sentEntries = new List<Entry>();
+		protected List<Entry> m_recievedEntries = new List<Entry>();
 
-		protected SortedSet<Entry> m_fullList = new SortedSet<Entry>(new EntryComparor(EntryEnum.TIME, false));
+		protected List<Entry> m_fullList = new List<Entry>();
 
+		public double totalTime()
+		{
+			return m_totalTime;
+		}
 		public double totalBlockTime()
 		{
 			return m_totalBlockTime??0;
@@ -60,6 +59,10 @@ namespace HarProcessor
 			m_har = HarConvert.DeserializeFromFile(fileName);
 			initialize();
 		}
+		public IList<Entry> getEntries()
+		{
+			return m_har.Log.Entries;
+		}
 		public string getUrl()
 		{
 			// It will throw an exception if the processor has not been initialized.
@@ -78,30 +81,23 @@ namespace HarProcessor
 		}
 		protected void initialize()
 		{
-			SortedSet<Entry> test = new SortedSet<Entry>(new EntryComparor(EntryEnum.TIME, false));
 			m_totalBlockTime = 0;
 			m_totalWaitTime = 0;
 			m_totalDnsTime = 0;
 			m_totalConnectTime = 0;
 			m_totalSentTime = 0;
 			m_totalRecieveTime = 0;
+			m_totalTime = 0;
 			m_blockedEntries.Clear();
 			m_waitedEntries.Clear();
 			m_connectedEntries.Clear();
 			m_dnsEntries.Clear();
 			m_sentEntries.Clear();
 			m_recievedEntries.Clear();
-			//m_blockedEntries = new List<Entry>();
-			//m_waitedEntries = new List<Entry>();
-			//m_connectedEntries = new List<Entry>();
-			//m_dnsEntries = new List<Entry>();
-			//m_sentEntries = new List<Entry>();
-			//m_recievedEntries = new List<Entry>();
-
-			//m_orderedList = m_har.Log.Entries.OrderByDescending(o => o.Time).ToList();
-
+			m_fullList.Clear();
 			foreach (var entry in m_har.Log.Entries)
 			{
+				m_totalTime += entry.Time;
 				m_fullList.Add(entry);
 				if (entry.Timings.Blocked > 0)
 				{
@@ -136,51 +132,73 @@ namespace HarProcessor
 			}
 			//m_orderedList = test.ToList();
 		}
-		public string getAllByExecution()
+		public IList<Entry> getAllByExecution()
+		{
+			return m_har.Log.Entries;
+		}
+		public IList<Entry> getAllByTime()
+		{
+			return m_fullList.ToList();
+		}
+		public IList<Entry> getBlockTimes()
+		{
+			return m_blockedEntries.ToList();
+		}
+		public IList<Entry> getWaitTimes()
+		{
+			return m_waitedEntries.ToList();
+		}
+		public IList<Entry> getConnectTimes()
+		{
+			return m_connectedEntries.ToList();
+		}
+		public IList<Entry> getDnsTimes()
+		{
+			return m_dnsEntries.ToList();
+		}
+		public IList<Entry> getSendTimes()
+		{
+			return m_sentEntries.ToList();
+		}
+		public IList<Entry> getRecievedTimes()
+		{
+			return m_recievedEntries.ToList();
+		}
+		/*
+		String representation for simple view
+		*/
+		public string getStringAllByExecution()
 		{
 			return getEntryTimes(m_har.Log.Entries);
 		}
-		public string getAllByTime()
+		public string getStringAllByTime()
 		{
-			return getEntryTimes(m_fullList);
+			return getEntryTimes(m_fullList.ToList().OrderByDescending(x => x.Time));
 		}
-		public string getBlockTimes()
+		public string getStringBlockTimes()
 		{
-			return getEntryTimes(m_blockedEntries);
+			return getEntryTimes(m_blockedEntries.ToList().OrderByDescending(x => x.Timings.Blocked));
 		}
-		public string getWaitTimes()
+		public string getStringWaitTimes()
 		{
-			return getEntryTimes(m_waitedEntries);
-			//string returnMe = "";
-			//foreach (var entry in m_waitedEntries)
-			//{
-			//		double? waitTime = entry.Timings.Wait;
-			//		returnMe += string.Format("waited for {2} milliseconds Entry: {0}{1}", entry.Request.Url.Host, entry.Request.Url.AbsolutePath, waitTime);
-			//		returnMe += Environment.NewLine;
-			//}
-
-			//returnMe += string.Format("waited for {0} milliseconds", m_totalWaitTime);
-
-			//return returnMe;
-
+			return getEntryTimes(m_waitedEntries.ToList().OrderByDescending(x => x.Timings.Wait));
 		}
-		public string getConnectTimes()
+		public string getStringConnectTimes()
 		{
-			return getEntryTimes(m_connectedEntries);
+			return getEntryTimes(m_connectedEntries.ToList().OrderByDescending(x => x.Timings.Connect));
 		}
-		public string getDnsTimes()
+		public string getStringDnsTimes()
 		{
-			return getEntryTimes(m_dnsEntries);
+			return getEntryTimes(m_dnsEntries.ToList().OrderByDescending(x => x.Timings.Dns));
 		}
-		public string getSendTimes()
+		public string getStringSendTimes()
 		{
-			return getEntryTimes(m_sentEntries);
+			return getEntryTimes(m_sentEntries.ToList().OrderByDescending(x => x.Timings.Send));
 		}
-		public string getRecievedTimes()
+		public string getStringRecievedTimes()
 		{
-			return getEntryTimes(m_recievedEntries);
-		}
-
+			return getEntryTimes(m_recievedEntries.ToList().OrderByDescending(x => x.Timings.Receive));
+		} 
 		public string getEntryTimes(IEnumerable<Entry> entries)
 		{
 			string returnMe = "";
@@ -196,13 +214,12 @@ namespace HarProcessor
 		public void loadFromURL(string url)
 		{
 			string name = MakeValidFileName(url) + ".har";
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(name))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(name,false))
 			{
 				NReco.PhantomJS.PhantomJS test = new NReco.PhantomJS.PhantomJS();
 				test.OutputReceived += (sender, e) =>
 				{
 					file.Write(e.Data);
-					//Console.WriteLine("PhantomJS output: {0}", e.Data);
 				};
 				string[] args = { url };
 				test.Run("netsniff.js", args);

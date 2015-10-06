@@ -56,7 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comparer.cs" />
+    <Compile Include="CombinedEntry.cs" />
+    <Compile Include="HarComparer.cs" />
     <Compile Include="EntryComparor.cs" />
     <Compile Include="EntryEnum.cs" />
     <Compile Include="Processor.cs" />

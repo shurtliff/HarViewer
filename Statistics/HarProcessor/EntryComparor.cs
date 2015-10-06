@@ -7,7 +7,7 @@ using HarSharp;
 
 namespace HarProcessor
 {
-	class EntryComparor : IComparer<HarSharp.Entry>
+	class EntryComparor : IComparer<Entry>
 	{
 		protected EntryEnum m_type;
 		protected bool m_asc;
@@ -33,6 +33,8 @@ namespace HarProcessor
 					return Comparing(x.Timings.Send, y.Timings.Send);
 				case EntryEnum.RECIEVE:
 					return Comparing(x.Timings.Receive, y.Timings.Receive);
+				case EntryEnum.URL:
+					return Comparing(x.Request.Url.AbsoluteUri, y.Request.Url.AbsoluteUri);
 				case EntryEnum.TIME:
 				default:
 					return Comparing(x.Time, y.Time);
@@ -40,14 +42,40 @@ namespace HarProcessor
 		}
 		protected int Comparing(double? x, double? y)
 		{
-			x = x ?? -1;
-			y = y ?? -1;
+			x = x ?? 0;
+			y = y ?? 0;
 			if(m_asc)
 			{
-				return (int)(x - y);
+				var val = 0;
+				if (x < y) {
+					val = -1;
+				} else if (x > y)
+				{
+					val = 1;
+				}
+				return val;
 			} else
 			{
-				return (int)(y - x);
+				var val = 0;
+				if (x < y)
+				{
+					val = 1;
+				}
+				else if (x > y)
+				{
+					val = -1;
+				}
+				return val;
+			}
+		}
+		protected int Comparing(string x, string y)
+		{
+			if(m_asc)
+			{
+				return string.Compare(x, y);
+			} else
+			{
+				return string.Compare(y, x);
 			}
 		}
 	}

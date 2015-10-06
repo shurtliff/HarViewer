@@ -14,6 +14,7 @@ namespace HarProcessor
 		DNS,
 		CONNECT,
 		SEND,
-		RECIEVE
+		RECIEVE,
+		URL
 	}
 }
