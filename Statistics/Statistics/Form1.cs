@@ -70,12 +70,15 @@ namespace Statistics
 			detailGroupBox.Enabled = false;
 			loadComparisonFromFileButton.Enabled = false;
 			loadFromUrlButton.Enabled = false;
+			loadedFileLbl.Text = "NONE";
+			loadedCompareFilelbl.Text = "NONE";
 
 			viewBox.Text = "";
 			DialogResult result = openHarFile.ShowDialog();
             if ( result == DialogResult.OK)
 			{
 				m_processor.LoadFromFile(openHarFile.FileName);
+				loadedFileLbl.Text = openHarFile.FileName;
 				setupTotals();
 				loadComparisonFromFileButton.Enabled = true;
 				loadFromUrlButton.Enabled = true;
@@ -86,7 +89,8 @@ namespace Statistics
 			// Gets the URL from the already loaded HAR file and creates a
 			// new HAR file based on that.
 			m_compProcessor.loadFromURL(m_processor.getUrl());
-			populateComparison();
+			loadedCompareFilelbl.Text = m_processor.getUrl();
+            populateComparison();
 		}
 		private void loadComparisonFromFileButton_Click(object sender, EventArgs e)
 		{
@@ -95,6 +99,7 @@ namespace Statistics
 			if (result == DialogResult.OK)
 			{
 				m_compProcessor.LoadFromFile(openHarFile.FileName);
+				loadedCompareFilelbl.Text = openHarFile.FileName;
 				populateComparison();
 			}
 		}
