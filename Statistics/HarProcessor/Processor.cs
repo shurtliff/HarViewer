@@ -9,6 +9,7 @@ namespace HarProcessor
 {
     public class Processor
     {
+		protected Har m_har;
 		protected double m_totalTime;
 		protected double? m_totalBlockTime;
 		protected double? m_totalWaitTime;
@@ -16,14 +17,14 @@ namespace HarProcessor
 		protected double? m_totalDnsTime;
 		protected double? m_totalSentTime;
 		protected double? m_totalRecieveTime;
+
+		protected List<Entry> m_fullList = new List<Entry>();
 		protected List<Entry> m_blockedEntries = new List<Entry>();
 		protected List<Entry> m_waitedEntries = new List<Entry>();
 		protected List<Entry> m_connectedEntries = new List<Entry>();
 		protected List<Entry> m_dnsEntries = new List<Entry>();
 		protected List<Entry> m_sentEntries = new List<Entry>();
 		protected List<Entry> m_recievedEntries = new List<Entry>();
-
-		protected List<Entry> m_fullList = new List<Entry>();
 
 		public double totalTime()
 		{
@@ -53,31 +54,38 @@ namespace HarProcessor
 		{
 			return m_totalRecieveTime ?? 0;
 		}
-		protected Har m_har;
+
 		public void LoadFromFile(string fileName)
 		{
 			m_har = HarConvert.DeserializeFromFile(fileName);
 			initialize();
 		}
-		public IList<Entry> getEntries()
+		/// <summary>
+		/// Save the data to a file then load from the file.
+		/// There is a flaw in this in that it doesn't split out the block, connect, dns or reieve time
+		/// It is all placed in the wait and recieve times.
+		/// </summary>
+		/// <param name="url"></param>
+		public void loadFromURL(string url)
 		{
-			return m_har.Log.Entries;
+			string name = MakeValidFileName(url) + ".har";
+			using (System.IO.StreamWriter file = new System.IO.StreamWriter(name, false))
+			{
+				NReco.PhantomJS.PhantomJS test = new NReco.PhantomJS.PhantomJS();
+				test.OutputReceived += (sender, e) =>
+				{
+					file.Write(e.Data);
+				};
+				string[] args = { url };
+				test.Run("netsniff.js", args);
+			}
+			LoadFromFile(name);
 		}
+
 		public string getUrl()
 		{
 			// It will throw an exception if the processor has not been initialized.
 			return m_har.Log.Entries[0].Request.Url.AbsoluteUri;
-		}
-		public string getPageLoadTimes()
-		{
-			string returnMe = "";
-			foreach(var page in m_har.Log.Pages)
-			{
-				returnMe += string.Format("Page: {0} loaded in {1} milliseconds", page.Title, page.PageTimings.OnLoad);
-				returnMe += Environment.NewLine;
-			}
-
-			return returnMe;
 		}
 		protected void initialize()
 		{
@@ -130,74 +138,84 @@ namespace HarProcessor
 					m_totalRecieveTime += entry.Timings.Receive;
 				}
 			}
-			//m_orderedList = test.ToList();
 		}
-		public IList<Entry> getAllByExecution()
+		public IList<Entry> getEntries()
 		{
 			return m_har.Log.Entries;
 		}
-		public IList<Entry> getAllByTime()
+		public IList<Entry> getAllByExecution()
 		{
-			return m_fullList.ToList();
+			return getEntries();
 		}
 		public IList<Entry> getBlockTimes()
 		{
-			return m_blockedEntries.ToList();
+			return m_blockedEntries;
 		}
 		public IList<Entry> getWaitTimes()
 		{
-			return m_waitedEntries.ToList();
+			return m_waitedEntries;
 		}
 		public IList<Entry> getConnectTimes()
 		{
-			return m_connectedEntries.ToList();
+			return m_connectedEntries;
 		}
 		public IList<Entry> getDnsTimes()
 		{
-			return m_dnsEntries.ToList();
+			return m_dnsEntries;
 		}
 		public IList<Entry> getSendTimes()
 		{
-			return m_sentEntries.ToList();
+			return m_sentEntries;
 		}
 		public IList<Entry> getRecievedTimes()
 		{
-			return m_recievedEntries.ToList();
+			return m_recievedEntries;
 		}
 		/*
 		String representation for simple view
 		*/
+		public string getStringPageLoadTimes()
+		{
+			string returnMe = "";
+			foreach (var page in m_har.Log.Pages)
+			{
+				returnMe += string.Format("Page: {0} loaded in {1} milliseconds", page.Title, page.PageTimings.OnLoad);
+				returnMe += Environment.NewLine;
+			}
+
+			return returnMe;
+		}
 		public string getStringAllByExecution()
 		{
 			return getEntryTimes(m_har.Log.Entries);
 		}
 		public string getStringAllByTime()
 		{
-			return getEntryTimes(m_fullList.ToList().OrderByDescending(x => x.Time));
+			return getEntryTimes(m_fullList.OrderByDescending(x => x.Time));
 		}
 		public string getStringBlockTimes()
 		{
-			return getEntryTimes(m_blockedEntries.ToList().OrderByDescending(x => x.Timings.Blocked));
+			return getEntryTimes(m_blockedEntries.OrderByDescending(x => x.Timings.Blocked));
 		}
 		public string getStringWaitTimes()
 		{
-			return getEntryTimes(m_waitedEntries.ToList().OrderByDescending(x => x.Timings.Wait));
+			return getEntryTimes(m_waitedEntries.OrderByDescending(x => x.Timings.Wait));
 		}
 		public string getStringConnectTimes()
 		{
-			return getEntryTimes(m_connectedEntries.ToList().OrderByDescending(x => x.Timings.Connect));
+			return getEntryTimes(m_connectedEntries.OrderByDescending(x => x.Timings.Connect));
 		}
 		public string getStringDnsTimes()
 		{
-			return getEntryTimes(m_dnsEntries.ToList().OrderByDescending(x => x.Timings.Dns));
+			return getEntryTimes(m_dnsEntries.OrderByDescending(x => x.Timings.Dns));
 		}
 		public string getStringSendTimes()
 		{
-			return getEntryTimes(m_sentEntries.ToList().OrderByDescending(x => x.Timings.Send));
+			return getEntryTimes(m_sentEntries.OrderByDescending(x => x.Timings.Send));
 		}
 		public string getStringRecievedTimes()
 		{
-			return getEntryTimes(m_recievedEntries.ToList().OrderByDescending(x => x.Timings.Receive));
+			return getEntryTimes(m_recievedEntries.OrderByDescending(x => x.Timings.Receive));
 		} 
 		public string getEntryTimes(IEnumerable<Entry> entries)
 		{
@@ -210,21 +228,6 @@ namespace HarProcessor
 
 			return returnMe;
 
-		}
-		public void loadFromURL(string url)
-		{
-			string name = MakeValidFileName(url) + ".har";
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(name,false))
-			{
-				NReco.PhantomJS.PhantomJS test = new NReco.PhantomJS.PhantomJS();
-				test.OutputReceived += (sender, e) =>
-				{
-					file.Write(e.Data);
-				};
-				string[] args = { url };
-				test.Run("netsniff.js", args);
-			}
-			LoadFromFile(name);
 		}
 
 		private static string MakeValidFileName(string name)

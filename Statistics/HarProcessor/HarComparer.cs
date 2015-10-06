@@ -24,12 +24,12 @@ namespace HarProcessor
 			populateDictionary(m_old.getEntries(), m_new.getEntries(), m_combinedEntries);
 		}
 		/// <summary>
-		/// 
+		/// Fill the passed in dictionary with the passed in entries
 		/// </summary>
 		/// <param name="newEntries"></param>
 		/// <param name="oldEntries"></param>
 		/// <param name="dictionary"> the dictionary to add the entries to</param>
-		protected void populateDictionary(IEnumerable<Entry> newEntries, IEnumerable<Entry> oldEntries, IDictionary<string,CombinedEntry> dictionary)
+		protected void populateDictionary(IEnumerable<Entry> oldEntries, IEnumerable<Entry> newEntries, IDictionary<string,CombinedEntry> dictionary)
 		{
 			// Add each entry in the old list into the list of entrys
 			foreach (Entry entry in oldEntries)
@@ -64,6 +64,7 @@ namespace HarProcessor
 			}
 
 		}
+
 		public IDictionary<string,CombinedEntry> getList()
 		{
 			return m_combinedEntries;

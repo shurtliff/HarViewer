@@ -12,7 +12,7 @@ namespace HarProcessor
 		protected IList<Entry> m_oldEntries = new List<Entry>();
 		protected IList<Entry> m_newEntries = new List<Entry>();
 		/// <summary>
-		/// Either new or old entries can be null
+		/// Either new or old entries can be null as long as 1 has a value.
 		/// </summary>
 		/// <param name="oldEntry"></param>
 		/// <param name="newEntry"></param>
@@ -56,6 +56,12 @@ namespace HarProcessor
 		{
 				return generateKey(getAnyEntry());
 		}
+		/// <summary>
+		/// Insure the keys are all equal
+		/// </summary>
+		/// <param name="entries"></param>
+		/// <param name="key"></param>
+		/// <returns></returns>
 		protected bool keysEqual(IList<Entry> entries, string key)
 		{
 			foreach(Entry entry in entries)
@@ -95,6 +101,7 @@ namespace HarProcessor
 				throw new NullReferenceException("Both oldEntry and newEntry cannot be null");
 			}
 		}
+
 		public double oldTime { get { return getTime(true); } }
 		public double newTime { get { return getTime(false); } }
 		public int newCount { get { return getCount(false); } }

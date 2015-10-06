@@ -76,6 +76,12 @@
 			this.compareTotalTimeLabel = new System.Windows.Forms.Label();
 			this.loadComparisonFromFileButton = new System.Windows.Forms.Button();
 			this.multipleCallsBtn = new System.Windows.Forms.Button();
+			this.legendGroupBox = new System.Windows.Forms.GroupBox();
+			this.label11 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
+			this.label13 = new System.Windows.Forms.Label();
+			this.label14 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
 			this.detailGroupBox.SuspendLayout();
 			this.totalGroupBox.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -85,6 +91,7 @@
 			this.simpleSplitContainer.Panel2.SuspendLayout();
 			this.simpleSplitContainer.SuspendLayout();
 			this.groupBox1.SuspendLayout();
+			this.legendGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// openHarFile
@@ -106,6 +113,7 @@
 			this.detailGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.detailGroupBox.Controls.Add(this.legendGroupBox);
 			this.detailGroupBox.Controls.Add(this.multipleCallsBtn);
 			this.detailGroupBox.Controls.Add(this.simpleSplitContainer);
 			this.detailGroupBox.Controls.Add(this.comparedDataGrid);
@@ -163,6 +171,7 @@
 			this.showAllBtn.Name = "showAllBtn";
 			this.showAllBtn.Size = new System.Drawing.Size(149, 37);
 			this.showAllBtn.TabIndex = 2;
+			this.showAllBtn.Tag = "Order by new time";
 			this.showAllBtn.Text = "Show All";
 			this.showAllBtn.UseVisualStyleBackColor = true;
 			this.showAllBtn.Click += new System.EventHandler(this.showAllBtn_Click);
@@ -190,6 +199,7 @@
 			// 
 			// totalGroupBox
 			// 
+			this.totalGroupBox.Controls.Add(this.label15);
 			this.totalGroupBox.Controls.Add(this.totalTimeLabel);
 			this.totalGroupBox.Controls.Add(this.compareTotalTimeLabel);
 			this.totalGroupBox.Controls.Add(this.label10);
@@ -590,6 +600,68 @@
 			this.multipleCallsBtn.UseVisualStyleBackColor = true;
 			this.multipleCallsBtn.Click += new System.EventHandler(this.multipleCallsBtn_Click);
 			// 
+			// legendGroupBox
+			// 
+			this.legendGroupBox.Controls.Add(this.label14);
+			this.legendGroupBox.Controls.Add(this.label13);
+			this.legendGroupBox.Controls.Add(this.label12);
+			this.legendGroupBox.Controls.Add(this.label11);
+			this.legendGroupBox.Location = new System.Drawing.Point(454, 9);
+			this.legendGroupBox.Name = "legendGroupBox";
+			this.legendGroupBox.Size = new System.Drawing.Size(416, 116);
+			this.legendGroupBox.TabIndex = 23;
+			this.legendGroupBox.TabStop = false;
+			this.legendGroupBox.Text = "Legend";
+			// 
+			// label11
+			// 
+			this.label11.AutoSize = true;
+			this.label11.BackColor = System.Drawing.Color.LightPink;
+			this.label11.Location = new System.Drawing.Point(6, 22);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(310, 20);
+			this.label11.TabIndex = 0;
+			this.label11.Text = "Rows with a pink background are new calls";
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.BackColor = System.Drawing.Color.LightGreen;
+			this.label12.Location = new System.Drawing.Point(6, 42);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(369, 20);
+			this.label12.TabIndex = 1;
+			this.label12.Text = "Rows with a green background are no longer called";
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.BackColor = System.Drawing.Color.Green;
+			this.label13.Location = new System.Drawing.Point(7, 62);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(379, 20);
+			this.label13.TabIndex = 2;
+			this.label13.Text = "Cells with a green background are faster than before";
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.BackColor = System.Drawing.Color.Red;
+			this.label14.Location = new System.Drawing.Point(7, 82);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(363, 20);
+			this.label14.TabIndex = 3;
+			this.label14.Text = "Cells with a red backround take longer than before";
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(153, 0);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(270, 20);
+			this.label15.TabIndex = 5;
+			this.label15.Text = "Click on the labels to filter the results.";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -612,6 +684,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.simpleSplitContainer)).EndInit();
 			this.simpleSplitContainer.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
+			this.legendGroupBox.ResumeLayout(false);
+			this.legendGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -666,6 +740,12 @@
 		private System.Windows.Forms.Label improvedTotalTimeLabel;
 		private System.Windows.Forms.Button loadComparisonFromFileButton;
 		private System.Windows.Forms.Button multipleCallsBtn;
+		private System.Windows.Forms.GroupBox legendGroupBox;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.Label label15;
 	}
 }
 
